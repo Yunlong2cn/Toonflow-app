@@ -98,6 +98,7 @@ export default router.post(
         aspectRatio: projectSettingData?.videoRatio as `${number}:${number}`,
       };
       try {
+        console.log(`[分镜图生成] 开始生成分镜图 projectSettingData: ${JSON.stringify(projectSettingData)}, 分镜ID: ${item.id}, prompt: ${item.prompt}, 关联资产 imageId 列表: ${assetRecord[item.id!] || []}`);
         const imageCls = await u.Ai.Image(projectSettingData?.imageModel as `${string}:${string}`).run(
           {
             referenceList: await getAssetsImageBase64(assetRecord[item.id!] || []),
