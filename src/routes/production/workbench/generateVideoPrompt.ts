@@ -165,6 +165,7 @@ export default router.post(
             (i) => `<storyboardItem
   videoDesc='${i.videoDesc}'
   duration='${i.duration}'
+  shouldGenerateImage='${i.shouldGenerateImage}'
 ></storyboardItem>`,
           )},
           `;
