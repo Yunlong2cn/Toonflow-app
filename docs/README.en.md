@@ -25,10 +25,18 @@
 </p>
 
 <div align="center">
+  <p align="center">
+    <img src="./logo.png" alt="Toonflow Logo" height="120"/>
+  </p>
 
-<img src="./logo.png" alt="Toonflow Logo" height="120"/>
-
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=000000&center=true&vCenter=true&width=600&lines=Toonflow;AI+Short+Drama+Factory;Just+a+click%2C+novels+turn+into+episodes+in+seconds!)](https://git.io/typing-svg)
+  <p align="center">
+    <a href="https://git.io/typing-svg" target="_blank">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=FFFFFF&center=true&vCenter=true&width=600&lines=Toonflow;AI+Short+Drama+Factory;Just+a+click%2C+novels+turn+into+episodes+in+seconds!" />
+        <img alt="Typing SVG" src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=000000&center=true&vCenter=true&width=600&lines=Toonflow;AI+Short+Drama+Factory;Just+a+click%2C+novels+turn+into+episodes+in+seconds!" />
+      </picture>
+    </a>
+  </p>
 
   <p align="center">
     <a href="https://github.com/HBAI-Ltd/Toonflow-app/stargazers">
@@ -72,17 +80,23 @@
   <p align="center">
     <img src="https://mobaicons.com/icons/typescript,nodejs,electron,docker,socket?perline=5" alt="Tech Stack Icons" />
   </p>
-  <p align="center">
-    <img src="https://widgetbite.com/stats/HBAI-Ltd" alt="Visitors" />
-  </p>
   
   > 🚀 **All-in-One Short Drama Workflow**: From text to characters, from storyboards to videos — zero-threshold full-process AI automation, boosting creative efficiency by 10x+!
 </div>
 
 <div align="center">
-  <a href="./g-star.png" target="_blank">
-    <img src="./g-star.png" alt="AtomGit G-Star Certificate" width="100%"/>
-  </a>
+  <table>
+    <tr>
+      <td width="50%" align="center">
+        <a href="./g-star.png" target="_blank">
+          <img src="./g-star.png" alt="AtomGit G-Star Certificate" width="100%"/>
+        </a>
+      </td>
+      <td width="50%" align="center">
+        GVP - Gitee Most Valuable Open Source Project
+      </td>
+    </tr>
+  </table>
 </div>
 
 ---

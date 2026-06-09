@@ -79,9 +79,9 @@ export default router.post(
 );
 
 async function filterTypeGetFileUrl(url: string, type: string) {
-  if (type == 'role' || type == 'tool' || type == 'scene') {
-    return await u.oss.getSmallImageUrl(url)
+  if (type == "role" || type == "tool" || type == "scene") {
+    return await u.oss.getSmallImageUrl(url);
   } else {
-    return await u.oss.getFileUrl(url)
+    return await u.oss.getFileUrl(url);
   }
 }

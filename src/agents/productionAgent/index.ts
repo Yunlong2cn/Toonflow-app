@@ -407,7 +407,6 @@ async function consumeFullStream(
 
   try {
     for await (const chunk of fullStream) {
-      await new Promise<void>((resolve) => setTimeout(() => resolve(), 1));
       if (syncMsg) {
         const newMsg = syncMsg();
         if (newMsg !== msg) {
@@ -430,6 +429,8 @@ async function consumeFullStream(
         fullResponse += chunk.text;
       } else if (chunk.type === "error") {
         throw chunk.error;
+      } else if (chunk.type == "finish") {
+        break;
       }
     }
     text.complete();

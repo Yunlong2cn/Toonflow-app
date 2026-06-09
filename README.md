@@ -25,10 +25,18 @@
 </p>
 
 <div align="center">
+  <p align="center">
+    <img src="./docs/logo.png" alt="Toonflow Logo" height="120"/>
+  </p>
 
-<img src="./docs/logo.png" alt="Toonflow Logo" height="120"/>
-
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=000000&center=true&vCenter=true&width=600&lines=Toonflow;AI%E7%9F%AD%E5%89%A7%E5%B7%A5%E5%8E%82;%E5%8A%A8%E5%8A%A8%E6%89%8B%E6%8C%87%EF%BC%8C%E5%B0%8F%E8%AF%B4%E7%A7%92%E5%8F%98%E5%89%A7%E9%9B%86%EF%BC%81)](https://git.io/typing-svg)
+  <p align="center">
+    <a href="https://git.io/typing-svg" target="_blank">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=FFFFFF&center=true&vCenter=true&width=600&lines=Toonflow;AI%E7%9F%AD%E5%89%A7%E5%B7%A5%E5%8E%82;%E5%8A%A8%E5%8A%A8%E6%89%8B%E6%8C%87%EF%BC%8C%E5%B0%8F%E8%AF%B4%E7%A7%92%E5%8F%98%E5%89%A7%E9%9B%86%EF%BC%81" />
+        <img alt="Typing SVG" src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=000000&center=true&vCenter=true&width=600&lines=Toonflow;AI%E7%9F%AD%E5%89%A7%E5%B7%A5%E5%8E%82;%E5%8A%A8%E5%8A%A8%E6%89%8B%E6%8C%87%EF%BC%8C%E5%B0%8F%E8%AF%B4%E7%A7%92%E5%8F%98%E5%89%A7%E9%9B%86%EF%BC%81" />
+      </picture>
+    </a>
+  </p>
 
   <p align="center">
     <a href="https://github.com/HBAI-Ltd/Toonflow-app/stargazers">
@@ -72,17 +80,23 @@
   <p align="center">
     <img src="https://mobaicons.com/icons/typescript,nodejs,electron,docker,socket?perline=5" alt="Tech Stack Icons" />
   </p>
-  <p align="center">
-    <img src="https://widgetbite.com/stats/HBAI-Ltd" alt="Visitors" />
-  </p>
   
   > 🚀 **一站式短剧工程**：从文本到角色，从分镜到视频，0门槛全流程AI化，创作效率提升10倍+！
 </div>
 
 <div align="center">
-  <a href="./docs/g-star.png" target="_blank">
-    <img src="./docs/g-star.png" alt="AtomGit G-Star 认证证书" width="100%"/>
-  </a>
+  <table>
+    <tr>
+      <td width="50%" align="center">
+        <a href="./docs/g-star.png" target="_blank">
+          <img src="./docs/g-star.png" alt="AtomGit G-Star 认证证书" width="100%"/>
+        </a>
+      </td>
+      <td width="50%" align="center">
+        GVP - Gitee最有价值开源项目
+      </td>
+    </tr>
+  </table>
 </div>
 
 ---

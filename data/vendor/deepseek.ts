@@ -1,6 +1,6 @@
 /**
  * Toonflow AI供应商模板 - DeepSeek
- * @version 2.0
+ * @version 2.1
  */
 
 // ============================================================
@@ -127,7 +127,7 @@ declare const exports: {
 
 const vendor: VendorConfig = {
   id: "deepseek",
-  version: "2.0",
+  version: "2.1",
   author: "Toonflow",
   name: "DeepSeek",
   description:
@@ -172,11 +172,21 @@ const textRequest = (model: TextModel, think: boolean, thinkLevel: 0 | 1 | 2 | 3
     extraBody.reasoning_effort = effortMap[thinkLevel];
   }
 
-  return createDeepSeek({
+  return createOpenAICompatible({
     baseURL: vendor.inputValues.baseUrl,
     apiKey,
-    extraBody,
-  }).chat(model.modelName);
+    fetch: async (url: string, options?: RequestInit) => {
+      const rawBody = JSON.parse((options?.body as string) ?? "{}");
+      const modifiedBody = {
+        ...rawBody,
+        ...extraBody
+      };
+      return await fetch(url, {
+        ...options,
+        body: JSON.stringify(modifiedBody),
+      });
+    },
+  }).chatModel(model.modelName);
 };
 
 const imageRequest = async (config: ImageConfig, model: ImageModel): Promise<string> => {

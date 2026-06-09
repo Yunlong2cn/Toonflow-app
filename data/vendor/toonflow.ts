@@ -133,7 +133,7 @@ declare const exports: {
 
 const vendor: VendorConfig = {
   id: "toonflow",
-  version: "3.0",
+  version: "3.2",
   author: "Toonflow",
   name: "Toonflow官方中转平台",
   description:
@@ -146,7 +146,23 @@ const vendor: VendorConfig = {
   },
   models: [
     {
-      name: "Wan2.6 (支持真人)",
+      name: "Seedance-2.0 (支持真人)",
+      modelName: "Seedance 2.0",
+      type: "video",
+      mode: ["text", "startFrameOptional", ["imageReference:9", "videoReference:3", "audioReference:3"]],
+      audio: "optional",
+      durationResolutionMap: [{ duration: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], resolution: ["480p", "720p"] }],
+    },
+    {
+      name: "Seedance 2.0 fast (支持真人)",
+      modelName: "Seedance 2.0 fast",
+      type: "video",
+      mode: ["text", "startFrameOptional", ["imageReference:9", "videoReference:3", "audioReference:3"]],
+      audio: "optional",
+      durationResolutionMap: [{ duration: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], resolution: ["480p", "720p"] }],
+    },
+    {
+      name: "Wan2.6",
       type: "video",
       modelName: "wan2.6",
       mode: ["singleImage"],
@@ -160,22 +176,6 @@ const vendor: VendorConfig = {
       mode: ["text", "endFrameOptional"],
       durationResolutionMap: [{ duration: [4, 5, 6, 7, 8, 9, 10, 11, 12], resolution: ["480p", "720p", "1080p"] }],
       audio: true,
-    },
-    {
-      name: "Seedance-2.0",
-      modelName: "Seedance 2.0",
-      type: "video",
-      mode: ["text", "startFrameOptional", ["imageReference:9", "videoReference:3", "audioReference:3"]],
-      audio: "optional",
-      durationResolutionMap: [{ duration: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], resolution: ["480p", "720p"] }],
-    },
-    {
-      name: "Seedance 2.0 fast",
-      modelName: "Seedance 2.0 fast",
-      type: "video",
-      mode: ["text", "startFrameOptional", ["imageReference:9", "videoReference:3", "audioReference:3"]],
-      audio: "optional",
-      durationResolutionMap: [{ duration: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], resolution: ["480p", "720p"] }],
     },
     {
       name: "ViduQ3 pro",
@@ -213,6 +213,13 @@ const vendor: VendorConfig = {
       modelName: "doubao-seedream-4-5",
       mode: ["text", "singleImage", "multiReference"],
     },
+    {
+      name: "全能图片G-2.0",
+      type: "image",
+      modelName: "全能图片G-2.0",
+      mode: ["text", "singleImage", "multiReference"],
+    },
+    // { name: "DeepSeek v4 pro", modelName: "deepseek-v4-pro", type: "text", think: false },
   ],
 };
 
@@ -371,12 +378,6 @@ const imageRequest = async (config: ImageConfig, model: ImageModel): Promise<str
   }
   if (lowerName.includes("gpt") || lowerName.includes("全能图片")) {
     const normalizedSize = config.size === "1K" ? "1k" : config.size === "2K" ? "2k" : config.size === "4K" ? "4k" : config.size;
-
-    const sizeMap: Record<string, Record<string, string>> = {
-      "16:9": { "1K": "1792x1008", "2K": "2048x1152", "4K": "3840x2160" },
-      "9:16": { "1K": "1008x1792", "2K": "1152x2048", "4K": "2160x3840" },
-    };
-    const resolvedSize = sizeMap[config.aspectRatio]?.[normalizedSize];
     const body: Record<string, any> = {
       model: model.modelName,
       prompt: config.prompt,
@@ -441,7 +442,11 @@ const videoRequest = async (config: VideoConfig, model: VideoModel): Promise<str
   const imageRefs = (config.referenceList ?? []).filter((r) => r.type === "image").map((r) => r.base64);
   const videoRefs = (config.referenceList ?? []).filter((r) => r.type === "video").map((r) => r.base64);
   const audioRefs = (config.referenceList ?? []).filter((r) => r.type === "audio").map((r) => r.base64);
-
+  if (imageRefs && imageRefs.length) {
+    for (const item of imageRefs) {
+      await zipImage(item, 3 * 1024 * 104);
+    }
+  }
   // 构建模型专属 metadata
   let metadata: Record<string, any> = {};
 
@@ -634,9 +639,7 @@ const videoRequest = async (config: VideoConfig, model: VideoModel): Promise<str
   // 公共请求体（非万象通用路径）
   const publicBody: Record<string, any> = {
     model: model.modelName,
-    ...(imageRefs.length && !(lowerName.includes("doubao") || (lowerName.includes("seedance") && !lowerName.includes("vidu")))
-      ? { images: imageRefs }
-      : {}),
+    ...(imageRefs.length && lowerName.includes("vidu") ? { images: imageRefs } : {}),
     prompt: config.prompt,
     duration: config.duration,
     resolution: config.resolution,
@@ -745,4 +748,4 @@ exports.ttsRequest = ttsRequest;
 exports.checkForUpdates = checkForUpdates;
 exports.updateVendor = updateVendor;
 
-export { };
+export {};

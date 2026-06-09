@@ -63,9 +63,28 @@ interface ToolConfig {
   msg: ReturnType<ResTool["newMessage"]>;
 }
 
+/**
+ * 串行队列：确保 socket 操作排队执行，避免并发过高导致假死
+ * @param delayMs 每个操作之间的最小间隔(ms)
+ */
+function createSocketQueue(delayMs = 800) {
+  let lastPromise: Promise<any> = Promise.resolve();
+  return <T>(fn: () => Promise<T>): Promise<T> => {
+    lastPromise = lastPromise.then(
+      () =>
+        new Promise<T>((resolve, reject) => {
+          setTimeout(() => fn().then(resolve, reject), delayMs);
+        }),
+    );
+    return lastPromise;
+  };
+}
+
 export default (toolCpnfig: ToolConfig) => {
   const { resTool, toolsNames, msg } = toolCpnfig;
   const { socket } = resTool;
+  const socketQueue = createSocketQueue(800);
+  const workMap: Record<any, any> = {};
   const tools: Record<string, Tool> = {
     get_flowData: tool({
       description: "获取工作区数据",
@@ -78,11 +97,16 @@ export default (toolCpnfig: ToolConfig) => {
       ),
       execute: async ({ key }) => {
         const thinking = msg.thinking(`正在获取${flowDataKeyLabels[key]}工作区数据...`);
-        console.log("[tools] get_flowData", key);
+
         const flowData: FlowData = await new Promise((resolve) => socket.emit("getFlowData", { key }, (res: any) => resolve(res)));
         thinking.appendText(`获取到${flowDataKeyLabels[key]}:\n` + JSON.stringify(flowData[key], null, 2));
         thinking.updateTitle(`获取${flowDataKeyLabels[key]}完成`);
         thinking.complete();
+        if (workMap[key] && JSON.stringify(workMap[key]) === JSON.stringify(flowData[key])) {
+          console.info(`[tools] get_flowData: ${flowDataKeyLabels[key]}数据未变化，无需更新`);
+          return `${flowDataKeyLabels[key]}数据未变化，无需更新`;
+        }
+        workMap[key] = flowData[key];
         return flowData[key];
       },
     }),
@@ -193,7 +217,15 @@ export default (toolCpnfig: ToolConfig) => {
       ),
       execute: async ({ ids }) => {
         const thinking = msg.thinking("正在生成分镜...");
-        new Promise((resolve) => socket.emit("generateStoryboard", { ids }, (res: any) => resolve(res)))
+        socketQueue(
+          () =>
+            new Promise((resolve, reject) =>
+              socket.emit("generateStoryboard", { ids }, (res: any) => {
+                if (res?.error) return reject(new Error(res.error));
+                resolve(res);
+              }),
+            ),
+        )
           .then((res) => {
             thinking.appendText("生成的分镜数据:\n" + JSON.stringify(res, null, 2));
             thinking.updateTitle("分镜生成完成");
@@ -206,6 +238,59 @@ export default (toolCpnfig: ToolConfig) => {
           });
 
         return "开始生成分镜";
+      },
+    }),
+    add_flowData_storyboard: tool({
+      description: "新增分镜面板到工作区",
+      inputSchema: jsonSchema<{
+        videoDesc: string;
+        prompt: string | null;
+        track: string;
+        duration: number;
+        associateAssetsIds: number[] | null;
+        shouldGenerateImage: string;
+      }>(
+        z
+          .object({
+            videoDesc: z.string().describe("画面描述、场景、关联资产名称、时长、景别、运镜、角色动作、情绪、光影氛围、台词、音效、关联资产ID"),
+            prompt: z.string().nullable().describe("分镜图片提示词"),
+            track: z.string().describe("分组"),
+            duration: z.number().describe("视频推荐时间"),
+            associateAssetsIds: z.array(z.number()).nullable().describe("该分镜所需的资产ID列表"),
+            shouldGenerateImage: z.enum(["true", "false"]).describe("是否需要生成分镜图片"),
+          })
+          .toJSONSchema(),
+      ),
+      execute: async (raw) => {
+        const thinking = msg.thinking("正在新增 分镜面板 数据...");
+        const data = {
+          videoDesc: raw.videoDesc,
+          prompt: raw.prompt,
+          track: raw.track,
+          duration: raw.duration,
+          associateAssetsIds: raw.associateAssetsIds ?? [],
+          shouldGenerateImage: raw.shouldGenerateImage,
+        };
+        socketQueue(
+          () =>
+            new Promise((resolve, reject) =>
+              socket.emit("addStoryboard", { ...data }, (res: any) => {
+                if (res?.error) return reject(new Error(res.error));
+                resolve(res);
+              }),
+            ),
+        )
+          .then((res) => {
+            thinking.appendText("新增的分镜数据:\n" + JSON.stringify(data, null, 2));
+            thinking.updateTitle("新增分镜成功");
+            thinking.complete();
+          })
+          .catch((e) => {
+            thinking.appendText("新增的分镜数据:\n" + JSON.stringify(data, null, 2));
+            thinking.updateTitle("新增分镜失败");
+            thinking.complete();
+          });
+        return true;
       },
     }),
   };

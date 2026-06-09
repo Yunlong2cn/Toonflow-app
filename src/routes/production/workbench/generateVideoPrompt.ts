@@ -23,7 +23,9 @@ export default router.post(
   }),
   async (req, res) => {
     const { trackId, projectId, info, model, mode } = req.body;
-
+    await u.db("o_videoTrack").where({ id: trackId }).update({
+      state: "生成中",
+    });
     //查询参数
     const images = await Promise.all(
       info.map(async (item: { id: number; sources: string }) => {
@@ -151,7 +153,6 @@ export default router.post(
     }
 
     const artStyle = projectData?.artStyle || "无";
-          console.log("%c Line:158 🍢", "background:#ffdd4d",assets);
 
     const visualManual = u.getArtPrompt(artStyle, "art_skills", "art_storyboard_video");
     const content = `
@@ -169,7 +170,6 @@ export default router.post(
 ></storyboardItem>`,
           )},
           `;
-    console.log("%c Line:156 🍬 content", "background:#4fff4B", content);
 
     try {
       const { text } = await u.Ai.Text("universalAi").invoke({
@@ -186,10 +186,18 @@ export default router.post(
         ],
       });
       await u.db("o_videoTrack").where({ id: trackId }).update({
+        state: "已完成",
         prompt: text,
       });
       res.status(200).send(success(text));
     } catch (e) {
+      await u
+        .db("o_videoTrack")
+        .where({ id: trackId })
+        .update({
+          state: "生成失败",
+          reason: u.error(e).message,
+        });
       res.status(400).send(error(u.error(e).message));
     }
   },

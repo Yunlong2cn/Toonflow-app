@@ -10,7 +10,7 @@ async function urlToBase64(imageUrl: string): Promise<string> {
   if (imageUrl.startsWith("/oss/")) {
     return await u.oss.getImageBase64(u.replaceUrl(imageUrl).replace("/smallImage", ""));
   }
-  imageUrl = await u.oss.getFileUrl(u.replaceUrl(imageUrl))
+  imageUrl = await u.oss.getFileUrl(u.replaceUrl(imageUrl));
   const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
   const contentType = response.headers["content-type"] || "image/png";
   const base64 = Buffer.from(response.data, "binary").toString("base64");
@@ -55,8 +55,7 @@ export default router.post(
       const url = await u.oss.getSmallImageUrl(savePath);
       return res.status(200).send(success({ url }));
     } catch (e) {
-      res.status(400).send(error(u.error(e).message))
+      res.status(400).send(error(u.error(e).message));
     }
-
   },
 );

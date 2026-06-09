@@ -13,11 +13,7 @@ type VideoMode =
   | "endFrameOptional" //首尾帧（尾帧可选）
   | "startFrameOptional" //首尾帧（首帧可选）
   | "text" //文本
-  | (
-      | `videoReference:${number}`
-      | `imageReference:${number}`
-      | `audioReference:${number}`
-    )[]; //多参考（数字代表限制数量）
+  | (`videoReference:${number}` | `imageReference:${number}` | `audioReference:${number}`)[]; //多参考（数字代表限制数量）
 
 interface TextModel {
   name: string;
@@ -110,25 +106,13 @@ interface PollResult {
 // 全局声明
 // ============================================================
 
-declare const axios: any; // HTTP请求库
 declare const logger: (msg: string) => void; // 日志函数
 declare const jsonwebtoken: any; // JWT处理库
 declare const zipImage: (base64: string, size: number) => Promise<string>; // 图片压缩函数，返回有头base64字符串
-declare const zipImageResolution: (
-  base64: string,
-  w: number,
-  h: number,
-) => Promise<string>; // 图片分辨率调整函数，返回有头base64字符串
-declare const mergeImages: (
-  base64Arr: string[],
-  maxSize?: string,
-) => Promise<string>; // 图片合成函数，返回有头base64字符串
+declare const zipImageResolution: (base64: string, w: number, h: number) => Promise<string>; // 图片分辨率调整函数，返回有头base64字符串
+declare const mergeImages: (base64Arr: string[], maxSize?: string) => Promise<string>; // 图片合成函数，返回有头base64字符串
 declare const urlToBase64: (url: string) => Promise<string>; // URL转Base64函数，返回有头base64字符串
-declare const pollTask: (
-  fn: () => Promise<PollResult>,
-  interval?: number,
-  timeout?: number,
-) => Promise<PollResult>; // 轮询函数，fn为异步函数，interval为轮询间隔，timeout为超时时间，返回fn的结果
+declare const pollTask: (fn: () => Promise<PollResult>, interval?: number, timeout?: number) => Promise<PollResult>; // 轮询函数，fn为异步函数，interval为轮询间隔，timeout为超时时间，返回fn的结果
 declare const createOpenAI: any;
 declare const createDeepSeek: any;
 declare const createZhipu: any;
@@ -158,11 +142,10 @@ declare const exports: {
 
 const vendor: VendorConfig = {
   id: "grsai",
-  version: "2.1",
+  version: "2.2",
   author: "Toonflow",
   name: "Grsai",
-  description:
-    "Grsai AI平台适配，支持文生图、图生图、文生视频、Gemini兼容文本模型 \n [前往中转平台](https://tf.grsai.ai/zh)",
+  description: "Grsai AI平台适配，支持文生图、图生图、文生视频、Gemini兼容文本模型 \n [前往中转平台](https://tf.grsai.ai/zh)",
   inputs: [
     { key: "apiKey", label: "API密钥", type: "password", required: true },
     {
@@ -218,11 +201,7 @@ const getHeaders = () => {
 // 适配器函数
 // ============================================================
 
-const textRequest = (
-  model: TextModel,
-  think: boolean,
-  thinkLevel: 0 | 1 | 2 | 3,
-) => {
+const textRequest = (model: TextModel, think: boolean, thinkLevel: 0 | 1 | 2 | 3) => {
   if (!vendor.inputValues.apiKey) throw new Error("缺少API Key");
   const apiKey = vendor.inputValues.apiKey.replace(/^Bearer\s+/i, "");
   return createGoogleGenerativeAI({
@@ -231,10 +210,7 @@ const textRequest = (
   }).chat(model.modelName);
 };
 
-const imageRequest = async (
-  config: ImageConfig,
-  model: ImageModel,
-): Promise<string> => {
+const imageRequest = async (config: ImageConfig, model: ImageModel): Promise<string> => {
   if (!vendor.inputValues.apiKey) throw new Error("缺少API Key");
   const baseUrl = vendor.inputValues.baseUrl;
   const headers = getHeaders();
@@ -262,32 +238,41 @@ const imageRequest = async (
   }
 
   // 选择接口路径
-  const apiPath = model.modelName.startsWith("nano-banana")
-    ? "/v1/draw/nano-banana"
-    : "/v1/draw/completions";
+  const apiPath = model.modelName.startsWith("nano-banana") ? "/v1/draw/nano-banana" : "/v1/draw/completions";
 
   logger(`开始提交图片生成任务，模型：${model.modelName}`);
-  const submitResp = await axios.post(`${baseUrl}${apiPath}`, requestBody, {
+  logger(`${baseUrl}${apiPath}`)
+  const submitResp = await fetch(`${baseUrl}${apiPath}`, {
+    method: "POST",
     headers,
+    body: JSON.stringify(requestBody),
   });
-  if (submitResp.data.code !== 0)
-    throw new Error(`任务提交失败：${submitResp.data.msg}`);
+  if (!submitResp.ok) {
+    const errorReason = await submitResp.text();
+    throw new Error(`任务提交失败：${errorReason}`);
+  }
+  const submitData = await submitResp.json();
+  if (submitData.code !== 0) throw new Error(`任务提交失败：${submitData.msg}`);
 
-  const taskId = submitResp.data.data.id;
+  const taskId = submitData.data.id;
   logger(`图片任务提交成功，任务ID：${taskId}`);
 
   // 轮询结果
   const pollResult = await pollTask(
     async () => {
-      const resp = await axios.post(
-        `${baseUrl}/v1/draw/result`,
-        { id: taskId },
-        { headers },
-      );
-      if (resp.data.code !== 0)
-        return { completed: true, error: resp.data.msg };
+      const resp = await fetch(`${baseUrl}/v1/draw/result`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ id: taskId }),
+      });
+      if (!resp.ok) {
+        const errorReason = await resp.text();
+        throw new Error(`查询任务失败：${errorReason}`);
+      }
+      const respData = await resp.json();
+      if (respData.code !== 0) return { completed: true, error: respData.msg };
 
-      const taskData = resp.data.data;
+      const taskData = respData.data;
       if (taskData.status === "failed")
         return {
           completed: true,
@@ -309,10 +294,7 @@ const imageRequest = async (
   return await urlToBase64(pollResult.data!);
 };
 
-const videoRequest = async (
-  config: VideoConfig,
-  model: VideoModel,
-): Promise<string> => {
+const videoRequest = async (config: VideoConfig, model: VideoModel): Promise<string> => {
   if (!vendor.inputValues.apiKey) throw new Error("缺少API Key");
   const baseUrl = vendor.inputValues.baseUrl;
   const headers = getHeaders();
@@ -328,43 +310,48 @@ const videoRequest = async (
 
   // 处理参考资源
   if (config.referenceList && config.referenceList.length > 0) {
-    const imageRefs = config.referenceList.filter(
-      (item) => item.type === "image",
-    ) as Extract<ReferenceList, { type: "image" }>[];
+    const imageRefs = config.referenceList.filter((item) => item.type === "image") as Extract<ReferenceList, { type: "image" }>[];
     if (config.mode.includes("endFrameOptional") && imageRefs.length >= 1) {
       requestBody.firstFrameUrl = imageRefs[0].base64;
       if (imageRefs.length >= 2) requestBody.lastFrameUrl = imageRefs[1].base64;
-    } else if (
-      config.mode.some(
-        (m) => Array.isArray(m) && m.includes("imageReference:3"),
-      )
-    ) {
+    } else if (config.mode.some((m) => Array.isArray(m) && m.includes("imageReference:3"))) {
       requestBody.urls = imageRefs.map((img) => img.base64);
     }
   }
 
   logger(`开始提交视频生成任务，模型：${model.modelName}`);
-  const submitResp = await axios.post(`${baseUrl}/v1/video/veo`, requestBody, {
+  const submitResp = await fetch(`${baseUrl}/v1/video/veo`, {
+    method: "POST",
     headers,
+    body: JSON.stringify(requestBody),
   });
-  if (submitResp.data.code !== 0)
-    throw new Error(`任务提交失败：${submitResp.data.msg}`);
+  if (!submitResp.ok) {
+    const errorReason = await submitResp.text();
+    throw new Error(`任务提交失败： ${errorReason}`);
+  }
+  const submitData = await submitResp.json();
+  if (submitData.code !== 0) throw new Error(`任务提交失败：${submitData.msg}`);
 
-  const taskId = submitResp.data.data.id;
+  const taskId = submitData.data.id;
   logger(`视频任务提交成功，任务ID：${taskId}`);
 
   // 轮询结果
   const pollResult = await pollTask(
     async () => {
-      const resp = await axios.post(
-        `${baseUrl}/v1/draw/result`,
-        { id: taskId },
-        { headers },
-      );
-      if (resp.data.code !== 0)
-        return { completed: true, error: resp.data.msg };
+      const resp = await fetch(`${baseUrl}/v1/draw/result`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ id: taskId }),
+      });
+      if (!resp.ok) {
+        const errorReason = await resp.text();
+        throw new Error(`查询视频任务失败 ${errorReason}`);
+      }
+      const respData = await resp.json();
+      logger(respData);
+      if (respData.code !== 0) return { completed: true, error: respData.msg };
 
-      const taskData = resp.data.data;
+      const taskData = respData.data;
       if (taskData.status === "failed")
         return {
           completed: true,
@@ -385,10 +372,7 @@ const videoRequest = async (
   return await urlToBase64(pollResult.data!);
 };
 
-const ttsRequest = async (
-  config: TTSConfig,
-  model: TTSModel,
-): Promise<string> => {
+const ttsRequest = async (config: TTSConfig, model: TTSModel): Promise<string> => {
   return "";
 };
 

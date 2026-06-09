@@ -25,10 +25,18 @@
 </p>
 
 <div align="center">
+  <p align="center">
+    <img src="./logo.png" alt="Toonflow Logo" height="120"/>
+  </p>
 
-<img src="./logo.png" alt="Toonflow Logo" height="120"/>
-
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=000000&center=true&vCenter=true&width=600&lines=Toonflow;Nhà+máy+phim+ngắn+AI;Nhấc+ngón+tay%2C+tiểu+thuyết+thành+phim+trong+giây+lát!)](https://git.io/typing-svg)
+  <p align="center">
+    <a href="https://git.io/typing-svg" target="_blank">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=FFFFFF&center=true&vCenter=true&width=600&lines=Toonflow;Nhà+máy+phim+ngắn+AI;Nhấc+ngón+tay%2C+tiểu+thuyết+thành+phim+trong+giây+lát!" />
+        <img alt="Typing SVG" src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=000000&center=true&vCenter=true&width=600&lines=Toonflow;Nhà+máy+phim+ngắn+AI;Nhấc+ngón+tay%2C+tiểu+thuyết+thành+phim+trong+giây+lát!" />
+      </picture>
+    </a>
+  </p>
 
   <p align="center">
     <a href="https://github.com/HBAI-Ltd/Toonflow-app/stargazers">
@@ -72,17 +80,23 @@
   <p align="center">
     <img src="https://mobaicons.com/icons/typescript,nodejs,electron,docker,socket?perline=5" alt="Biểu tượng Công nghệ" />
   </p>
-  <p align="center">
-    <img src="https://widgetbite.com/stats/HBAI-Ltd" alt="Khách truy cập" />
-  </p>
   
   > 🚀 **Quy trình sản xuất phim ngắn tất cả trong một**: Từ văn bản đến nhân vật, từ phân cảnh đến video, toàn bộ quy trình AI không rào cản, nâng cao hiệu suất sáng tạo lên hơn 10 lần!
 </div>
 
 <div align="center">
-  <a href="./g-star.png" target="_blank">
-    <img src="./g-star.png" alt="Chứng nhận AtomGit G-Star" width="100%"/>
-  </a>
+  <table>
+    <tr>
+      <td width="50%" align="center">
+        <a href="./g-star.png" target="_blank">
+          <img src="./g-star.png" alt="Chứng nhận AtomGit G-Star" width="100%"/>
+        </a>
+      </td>
+      <td width="50%" align="center">
+        GVP - Gitee Most Valuable Open Source Project
+      </td>
+    </tr>
+  </table>
 </div>
 
 ---

@@ -81,7 +81,6 @@ export default router.post(
 
     /** 一组剧本提取完成后统一入库并建立关联 */
     async function persistGroupResult(result: GroupResult) {
-      console.log("%c Line:84 🍪 result", "background:#6ec1c2", result);
       if (!result) return;
       const { batchScriptIds, newAssets, existingRefs } = result;
       if (!newAssets.length && !existingRefs.length) return;
@@ -141,7 +140,7 @@ export default router.post(
       }
 
       // 本批成功的剧本状态更新为 1（成功）
-      await u.db("o_script").whereIn("id", batchScriptIds).update({
+      await u.db("o_script").whereIn("id", batchScriptIds).where("projectId", projectId).update({
         extractState: 1,
         errorReason: null,
       });
@@ -156,10 +155,10 @@ export default router.post(
             const script = scriptMap.get(scriptId);
             if (!script) {
               errors.push({ scriptId, error: "未找到对应剧本" });
-              await u.db("o_script").where("id", scriptId).update({ extractState: -1, errorReason: "未找到对应剧本" });
+              await u.db("o_script").where("id", scriptId).where("projectId", projectId).update({ extractState: -1, errorReason: "未找到对应剧本" });
             } else {
               // 查看状态是否为等待提取，仅对等待提取进行生成
-              const item = await u.db("o_script").where("id", scriptId).select("extractState").first();
+              const item = await u.db("o_script").where("projectId", projectId).where("id", scriptId).select("extractState").first();
               if (item?.extractState == 2) {
                 validScripts.push({ id: scriptId, script });
               }
@@ -169,7 +168,7 @@ export default router.post(
         if (!validScripts.length) return;
         const validScriptIds = validScripts.map((v) => v.id);
         // 修改状态为正在提取中
-        await u.db("o_script").whereIn("id", validScriptIds).update({
+        await u.db("o_script").where("projectId", projectId).whereIn("id", validScriptIds).update({
           extractState: 0, // 正在提取
         });
         // 查询当前项目已有的资产列表，提供给 AI 参考
@@ -242,6 +241,7 @@ export default router.post(
             await u
               .db("o_script")
               .where("id", id)
+              .where("projectId", projectId)
               .update({ extractState: -1, errorReason: u.error(e).message });
           }
           return;
@@ -249,7 +249,7 @@ export default router.post(
         if (!collectedNew.length && !collectedExisting.length) {
           for (const { id } of validScripts) {
             errors.push({ scriptId: id, error: "AI 未返回任何资产" });
-            await u.db("o_script").where("id", id).update({ extractState: -1, errorReason: "AI 未返回任何资产" });
+            await u.db("o_script").where("id", id).where("projectId", projectId).update({ extractState: -1, errorReason: "AI 未返回任何资产" });
           }
           return;
         }

@@ -21,7 +21,7 @@ export default router.post(
     // 删除项目下的剧本信息
     const scriptData = await u.db("o_script").where("projectId", id).select("id");
     const scriptIds = scriptData.map((item: any) => item.id);
-    if (scriptIds.length > 0) {
+    if (scriptIds && scriptIds.length > 0) {
       await u.db("o_scriptAssets").whereIn("scriptId", scriptIds).delete();
     }
     await u.db("o_script").where("projectId", id).delete();
@@ -37,7 +37,7 @@ export default router.post(
     //删除需要删除资产的归属图片
     const assetsData = await u.db("o_assets").where("projectId", id).select("id");
     const assetsIds = assetsData.map((item: any) => item.id);
-    if (assetsIds.length > 0) {
+    if (assetsIds && assetsIds.length > 0) {
       // 先将 o_assets.imageId 置空，解除对 o_image 的外键引用
       await u.db("o_assets").whereIn("id", assetsIds).update({ imageId: null });
       await u.db("o_image").whereIn("assetsId", assetsIds).delete();

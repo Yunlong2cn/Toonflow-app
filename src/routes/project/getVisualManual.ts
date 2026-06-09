@@ -1,6 +1,6 @@
 import express from "express";
 import u from "@/utils";
-import { success } from "@/lib/responseFormat";
+import { error, success } from "@/lib/responseFormat";
 import fs from "fs";
 import path from "path";
 const router = express.Router();
@@ -88,6 +88,6 @@ export default router.post("/", async (req, res) => {
     );
     res.status(200).send(success(result));
   } catch (err) {
-    res.status(500).send({ error: String(err) });
+    res.status(500).send(error(u.error(err).message));
   }
 });

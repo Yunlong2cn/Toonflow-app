@@ -25,10 +25,18 @@
 </p>
 
 <div align="center">
+  <p align="center">
+    <img src="./logo.png" alt="Toonflow Logo" height="120"/>
+  </p>
 
-<img src="./logo.png" alt="Toonflow Logo" height="120"/>
-
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=000000&center=true&vCenter=true&width=600&lines=Toonflow;AI-%D1%84%D0%B0%D0%B1%D1%80%D0%B8%D0%BA%D0%B0+%D1%81%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D0%BE%D0%B2;%D0%9F%D1%80%D0%BE%D1%81%D1%82%D0%BE+%D0%BF%D0%BE%D1%88%D0%B5%D0%B2%D0%B5%D0%BB%D0%B8+%D0%BF%D0%B0%D0%BB%D1%8C%D1%86%D0%B5%D0%BC%2C+%D1%80%D0%BE%D0%BC%D0%B0%D0%BD+%D0%BC%D0%B3%D0%BD%D0%BE%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE+%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%B8%D1%82%D1%81%D1%8F+%D1%81%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D0%BE%D0%BC!)](https://git.io/typing-svg)
+  <p align="center">
+    <a href="https://git.io/typing-svg" target="_blank">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=FFFFFF&center=true&vCenter=true&width=600&lines=Toonflow;AI-%D1%84%D0%B0%D0%B1%D1%80%D0%B8%D0%BA%D0%B0+%D1%81%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D0%BE%D0%B2;%D0%9F%D1%80%D0%BE%D1%81%D1%82%D0%BE+%D0%BF%D0%BE%D1%88%D0%B5%D0%B2%D0%B5%D0%BB%D0%B8+%D0%BF%D0%B0%D0%BB%D1%8C%D1%86%D0%B5%D0%BC%2C+%D1%80%D0%BE%D0%BC%D0%B0%D0%BD+%D0%BC%D0%B3%D0%BD%D0%BE%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE+%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%B8%D1%82%D1%81%D1%8F+%D1%81%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D0%BE%D0%BC!" />
+        <img alt="Typing SVG" src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=000000&center=true&vCenter=true&width=600&lines=Toonflow;AI-%D1%84%D0%B0%D0%B1%D1%80%D0%B8%D0%BA%D0%B0+%D1%81%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D0%BE%D0%B2;%D0%9F%D1%80%D0%BE%D1%81%D1%82%D0%BE+%D0%BF%D0%BE%D1%88%D0%B5%D0%B2%D0%B5%D0%BB%D0%B8+%D0%BF%D0%B0%D0%BB%D1%8C%D1%86%D0%B5%D0%BC%2C+%D1%80%D0%BE%D0%BC%D0%B0%D0%BD+%D0%BC%D0%B3%D0%BD%D0%BE%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE+%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%B8%D1%82%D1%81%D1%8F+%D1%81%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D0%BE%D0%BC!" />
+      </picture>
+    </a>
+  </p>
 
   <p align="center">
     <a href="https://github.com/HBAI-Ltd/Toonflow-app/stargazers">
@@ -72,17 +80,23 @@
   <p align="center">
     <img src="https://mobaicons.com/icons/typescript,nodejs,electron,docker,socket?perline=5" alt="Tech Stack Icons" />
   </p>
-  <p align="center">
-    <img src="https://widgetbite.com/stats/HBAI-Ltd" alt="Visitors" />
-  </p>
   
   > 🚀 **Комплексная платформа для создания сериалов**: от текста до персонажей, от раскадровки до видео — полный AI-конвейер с нулевым порогом входа, повышающий эффективность творчества в 10+ раз!
 </div>
 
 <div align="center">
-  <a href="./g-star.png" target="_blank">
-    <img src="./g-star.png" alt="AtomGit G-Star 认证证书" width="100%"/>
-  </a>
+  <table>
+    <tr>
+      <td width="50%" align="center">
+        <a href="./g-star.png" target="_blank">
+          <img src="./g-star.png" alt="AtomGit G-Star 认证证书" width="100%"/>
+        </a>
+      </td>
+      <td width="50%" align="center">
+        GVP - Gitee Самый ценный проект с открытым исходным кодом
+      </td>
+    </tr>
+  </table>
 </div>
 
 ---

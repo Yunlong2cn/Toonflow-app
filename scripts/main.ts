@@ -1,4 +1,4 @@
-import { app, BrowserWindow, protocol } from "electron";
+import { app, BrowserWindow, protocol, systemPreferences } from "electron";
 import path from "path";
 import fs from "fs";
 import Module from "module";
@@ -119,54 +119,6 @@ function requireWithCustomPaths(modulePath: string): any {
 }
 
 let mainWindow: BrowserWindow | null = null;
-let loadingWindow: BrowserWindow | null = null;
-
-const loadingHtml = `data:text/html;charset=utf-8,${encodeURIComponent(`<!DOCTYPE html>
-<html><head><meta charset="utf-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:#fff;color:#333;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  user-select:none;-webkit-app-region:drag}
-.spinner{width:48px;height:48px;border:4px solid rgba(0,0,0,.1);
-  border-top-color:#000;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-p{margin-top:20px;font-size:14px;opacity:.6}
-</style></head><body><div class="spinner"></div><p>正在启动服务…</p></body></html>`)}`;
-
-function showLoading(): void {
-  loadingWindow = new BrowserWindow({
-    width: 1000,
-    height: 700,
-    minWidth: 800,
-    minHeight: 500,
-    frame: false,
-    resizable: false,
-    maximizable: false,
-    minimizable: false,
-    show: true,
-    backgroundColor: "#ffffff",
-    autoHideMenuBar: true,
-    titleBarStyle: "hidden",
-    titleBarOverlay: {
-      color: "#ffffff",
-      symbolColor: "#333333",
-      height: 36,
-    },
-  });
-  loadingWindow.setMenuBarVisibility(false);
-  loadingWindow.removeMenu();
-  loadingWindow.on("closed", () => {
-    loadingWindow = null;
-  });
-  void loadingWindow.loadURL(loadingHtml);
-}
-
-function closeLoading(): void {
-  if (loadingWindow && !loadingWindow.isDestroyed()) {
-    loadingWindow.close();
-    loadingWindow = null;
-  }
-}
 
 function createMainWindow(): Promise<void> {
   return new Promise((resolve) => {
@@ -190,7 +142,6 @@ function createMainWindow(): Promise<void> {
     });
 
     win.once("ready-to-show", () => {
-      closeLoading();
       win.show();
       resolve();
     });
@@ -221,9 +172,6 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 app.whenReady().then(async () => {
-  // 立即显示加载窗口（data URL + backgroundColor，瞬间可见）
-  showLoading();
-
   try {
     let servePath: string;
     if (app.isPackaged) {
@@ -293,8 +241,21 @@ app.whenReady().then(async () => {
             return { ok: false, error: "缺少url参数" };
           }
         },
+        getlocallanguage: () => {
+          // 获取应用区域设置
+
+          // macOS系统特定方法
+          if (process.platform === "darwin") {
+            const systemLocale = systemPreferences.getUserDefault("AppleLocale", "string");
+            return { ok: true, local: systemLocale };
+          }
+          const appLocale = app.getLocale();
+          return { ok: true, local: appLocale };
+        },
       };
+
       const handler = handlers[pathname];
+
       const responseData = handler ? handler() : { error: "未知接口" };
       return new Response(JSON.stringify(responseData), {
         headers: {
